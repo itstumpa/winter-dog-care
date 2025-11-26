@@ -138,14 +138,14 @@ export default function Home() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-gray-900">
-                    {product.name}
+                    {product.title}
                   </h3>
                   <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                     {product.category}
                   </span>
                 </div>
                 <p className="text-gray-600 mb-4">
-                  {product.description}
+                  {product.shortDescriptio}
                 </p>
                 <div className="flex justify-between items-center">
                   <span className="text-2xl font-bold text-blue-600">

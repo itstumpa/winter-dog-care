@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function ProductDetailsPage({ params }) {
+  // Unwrap params using React.use()
+  const { id } = use(params);
+  
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -12,7 +15,7 @@ export default function ProductDetailsPage({ params }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`/api/products/${params.id}`);
+        const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
         
         if (data.product) {
@@ -31,8 +34,10 @@ export default function ProductDetailsPage({ params }) {
       }
     };
 
-    fetchProduct(); // ← CALL THE FUNCTION
-  }, [params.id]); // ← ADD DEPENDENCY
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]); // ← Use unwrapped id
 
   if (loading) {
     return (
@@ -58,7 +63,6 @@ export default function ProductDetailsPage({ params }) {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

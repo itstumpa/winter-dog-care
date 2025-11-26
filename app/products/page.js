@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/ProductCard';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);

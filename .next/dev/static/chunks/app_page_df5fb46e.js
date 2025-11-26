@@ -380,7 +380,7 @@ function Home() {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                                             className: "text-xl font-bold text-gray-900",
-                                                            children: product.name
+                                                            children: product.title
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/page.js",
                                                             lineNumber: 140,
@@ -402,7 +402,7 @@ function Home() {
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                     className: "text-gray-600 mb-4",
-                                                    children: product.description
+                                                    children: product.shortDescriptio
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/page.js",
                                                     lineNumber: 147,

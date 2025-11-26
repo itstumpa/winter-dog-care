@@ -14,23 +14,25 @@ function ManageProductsContent() {
   const [deleting, setDeleting] = useState(null);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
-
- const fetchProducts = async () => {
-  if (!user) return;
-
-  try {
-    const response = await fetch(`/api/products?userId=${user.uid}`);
-    const data = await response.json();
-    
-    if (data.products) {
-      const productsData = data.products.map(product => ({
-        ...product,
-        id: product._id.toString(),
-      }));
-      setProducts(productsData);
+    if (user) {
+      fetchProducts();
     }
+  }, [user]);
+
+  const fetchProducts = async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch(`/api/products?userId=${user.uid}`);
+      const data = await response.json();
+
+      if (data.products) {
+        const productsData = data.products.map(product => ({
+          ...product,
+          id: product._id.toString(),
+        }));
+        setProducts(productsData);
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -39,22 +41,29 @@ function ManageProductsContent() {
   };
 
   const handleDelete = async (productId) => {
-  if (!confirm('Are you sure you want to delete this product?')) {
-    return;
-  }
-
-  setDeleting(productId);
-  try {
-    const response = await fetch(`/api/products/${productId}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete');
+    if (!confirm('Are you sure you want to delete this product?')) {
+      return;
     }
 
-    setProducts(products.filter(p => p.id !== productId));
-    alert('Product deleted successfully! ✅');
+    setDeleting(productId);
+    try {
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete');
+      }
+
+      setProducts(products.filter(p => p.id !== productId));
+      alert('Product deleted successfully! ✅');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Failed to delete product: ' + error.message);
+    } finally {
+      setDeleting(null);
+    }
+  }; // ← PROPERLY CLOSED FUNCTION
 
   if (loading) {
     return (
@@ -76,8 +85,8 @@ function ManageProductsContent() {
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Manage Products</h1>
             <p className="text-gray-600">View and manage all your winter dog care products</p>
           </div>
-          <Link
-            href="/add-product"
+          <Link 
+            href="/add-product" 
             className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             ➕ Add New Product
@@ -101,7 +110,7 @@ function ManageProductsContent() {
               <div>
                 <p className="text-gray-600 text-sm mb-1">Your Products</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {products.filter(p => p.createdBy === user.uid).length}
+                  {products.filter(p => p.createdBy === user?.uid).length}
                 </p>
               </div>
               <div className="text-5xl">✨</div>
@@ -244,7 +253,7 @@ function ManageProductsContent() {
       </div>
     </div>
   );
-}
+} // ← REMOVED SEMICOLON (not needed for function declaration)
 
 export default function ManageProductsPage() {
   return (
@@ -252,4 +261,4 @@ export default function ManageProductsPage() {
       <ManageProductsContent />
     </ProtectedRoute>
   );
-}
+} // ← REMOVED SEMICOLON

@@ -42,33 +42,60 @@ function AddProductContent() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
-    
-    const response = await fetch('/api/products', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...formData,
-        gradient: randomGradient,
-        createdBy: user.uid,
-        createdByEmail: user.email,
-        createdByName: user.displayName,
-        createdAt: new Date().toISOString()
-      }),
-    });
+    try {
+      const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+      
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          gradient: randomGradient,
+          createdBy: user.uid,
+          createdByEmail: user.email,
+          createdByName: user.displayName || user.email,
+          createdAt: new Date().toISOString()
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to add product');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to add product');
+      }
+
+      // Show success message
+      setShowSuccess(true);
+      
+      // Reset form
+      setFormData({
+        title: '',
+        shortDescription: '',
+        fullDescription: '',
+        price: '',
+        category: 'Clothing',
+        imageUrl: '',
+        emoji: '🧥'
+      });
+
+      // Hide success message and redirect after 2 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+        router.push('/products');
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error adding product:', error);
+      alert('Failed to add product: ' + error.message);
+    } finally {
+      setLoading(false);
     }
-
-    setShowSuccess(true);
-    
+  }; // ← FUNCTION CLOSING
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
@@ -179,10 +206,10 @@ function AddProductContent() {
                   <option value="Clothing">Clothing</option>
                   <option value="Accessories">Accessories</option>
                   <option value="Nutrition">Nutrition</option>
-                  <option value="Furniture">Furniture</option>
-                  <option value="Safety">Safety</option>
+                  <option value="Bedding">Bedding</option>
                   <option value="Toys">Toys</option>
                   <option value="Grooming">Grooming</option>
+                  <option value="Safety">Safety</option>
                 </select>
               </div>
             </div>
@@ -280,7 +307,7 @@ function AddProductContent() {
       </div>
     </div>
   );
-}
+} // ← COMPONENT CLOSING
 
 export default function AddProductPage() {
   return (

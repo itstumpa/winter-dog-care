@@ -1,5 +1,6 @@
 {
   "/add-product/page": "app/add-product/page.js",
+  "/api/products/[id]/route": "app/api/products/[id]/route.js",
   "/api/products/route": "app/api/products/route.js",
   "/manage-products/page": "app/manage-products/page.js",
   "/page": "app/page.js",

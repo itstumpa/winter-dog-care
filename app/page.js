@@ -127,14 +127,14 @@ export default function Home() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {data.products.map((product, index) => (
-            <div 
-              key={index}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2"
-            >
-              <div className={`h-48 bg-gradient-to-br ${gradientColors[index % gradientColors.length]} flex items-center justify-center text-8xl`}>
-                {product.emoji}
-              </div>
+          {data.products.slice(0, 3).map((product, index) => (
+             <div 
+                key={product._id || index}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2"
+              >
+                <div className={`h-48 bg-gradient-to-br ${product.gradient || gradientColors[index % gradientColors.length]} flex items-center justify-center text-8xl`}>
+                  {product.emoji}
+                </div>
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-gray-900">
@@ -151,12 +151,13 @@ export default function Home() {
                   <span className="text-2xl font-bold text-blue-600">
                     ${product.price}
                   </span>
-                  <Link 
-                    href="/products" 
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    View
-                  </Link>
+                  {/* LINK TO DYNAMIC ID PAGE */}
+                    <Link 
+                      href={`/products/${product._id}`} 
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    >
+                      View
+                    </Link>
                 </div>
               </div>
             </div>
@@ -164,12 +165,12 @@ export default function Home() {
         </div>
 
         <div className="text-center mt-12">
-          <Link
-            href="/products"
-            className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
-          >
-            View All Products →
-          </Link>
+            <Link
+              href="/products"
+              className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+            >
+              View All Products →
+            </Link>
         </div>
       </div>
     </section>

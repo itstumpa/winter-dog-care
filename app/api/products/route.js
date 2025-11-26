@@ -4,24 +4,33 @@ import clientPromise from '@/lib/mongodb';
 // GET - Fetch products
 export async function GET(request) {
   try {
+    console.log('=== GET /api/products ===');
+    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+    
     const client = await clientPromise;
-    const db = client.db('winter-dog-care-01');
+    console.log('MongoDB client connected');
+    
+    const db = client.db('winter-dog-care-01'); // ← CHANGE TO YOUR DB NAME
+    console.log('Database:', db.databaseName);
     
     // Get user ID from query params (optional)
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
+    console.log('User ID:', userId);
 
     let products;
     
     if (userId) {
       // Fetch products only for this user
+      console.log('Fetching products for user:', userId);
       products = await db
         .collection('products')
         .find({ createdBy: userId })
         .sort({ createdAt: -1 })
         .toArray();
     } else {
-      // Fetch all products (for homepage/public view)
+      // Fetch all products
+      console.log('Fetching all products');
       products = await db
         .collection('products')
         .find({})
@@ -29,7 +38,9 @@ export async function GET(request) {
         .toArray();
     }
 
-    // Get section info (for homepage)
+    console.log('Products found:', products.length);
+
+    // Get section info
     const section = await db.collection('sections')
       .findOne({ name: 'popular-products' });
 
@@ -40,10 +51,12 @@ export async function GET(request) {
     }, { status: 200 });
 
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('=== ERROR in GET /api/products ===');
+    console.error('Error:', error.message);
+    console.error('Stack:', error.stack);
     return NextResponse.json({ 
       success: false,
-      error: 'Failed to fetch products' 
+      error: error.message 
     }, { status: 500 });
   }
 }
@@ -51,10 +64,14 @@ export async function GET(request) {
 // POST - Create new product
 export async function POST(request) {
   try {
+    console.log('=== POST /api/products ===');
+    
     const body = await request.json();
+    console.log('Request body:', body);
 
     // Validate required fields
     if (!body.createdBy) {
+      console.log('Error: User ID required');
       return NextResponse.json({ 
         success: false,
         error: 'User ID required' 
@@ -62,14 +79,18 @@ export async function POST(request) {
     }
 
     if (!body.title || !body.price || !body.category) {
+      console.log('Error: Missing required fields');
       return NextResponse.json({ 
         success: false,
-        error: 'Missing required fields' 
+        error: 'Missing required fields (title, price, category)' 
       }, { status: 400 });
     }
 
     const client = await clientPromise;
-    const db = client.db('winter-dog-care-01'); // Change to your database name
+    console.log('MongoDB client connected');
+    
+    const db = client.db('winter-dog-care-01'); // ← CHANGE TO YOUR DB NAME
+    console.log('Database:', db.databaseName);
     
     // Prepare product data
     const productData = {
@@ -78,7 +99,9 @@ export async function POST(request) {
       updatedAt: new Date()
     };
     
+    console.log('Inserting product:', productData);
     const result = await db.collection('products').insertOne(productData);
+    console.log('Insert result:', result);
 
     return NextResponse.json({ 
       success: true,
@@ -87,10 +110,12 @@ export async function POST(request) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error('=== ERROR in POST /api/products ===');
+    console.error('Error:', error.message);
+    console.error('Stack:', error.stack);
     return NextResponse.json({ 
       success: false,
-      error: 'Failed to create product' 
+      error: error.message 
     }, { status: 500 });
   }
 }

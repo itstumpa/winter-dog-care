@@ -88,26 +88,34 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mongodb$2e$js__$5b$ap
 ;
 async function GET(request) {
     try {
+        console.log('=== GET /api/products ===');
+        console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
         const client = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mongodb$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"];
-        const db = client.db('winter-dog-care-01');
+        console.log('MongoDB client connected');
+        const db = client.db('winter-dog-care-01'); // ← CHANGE TO YOUR DB NAME
+        console.log('Database:', db.databaseName);
         // Get user ID from query params (optional)
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');
+        console.log('User ID:', userId);
         let products;
         if (userId) {
             // Fetch products only for this user
+            console.log('Fetching products for user:', userId);
             products = await db.collection('products').find({
                 createdBy: userId
             }).sort({
                 createdAt: -1
             }).toArray();
         } else {
-            // Fetch all products (for homepage/public view)
+            // Fetch all products
+            console.log('Fetching all products');
             products = await db.collection('products').find({}).sort({
                 createdAt: -1
             }).toArray();
         }
-        // Get section info (for homepage)
+        console.log('Products found:', products.length);
+        // Get section info
         const section = await db.collection('sections').findOne({
             name: 'popular-products'
         });
@@ -122,10 +130,12 @@ async function GET(request) {
             status: 200
         });
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('=== ERROR in GET /api/products ===');
+        console.error('Error:', error.message);
+        console.error('Stack:', error.stack);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: false,
-            error: 'Failed to fetch products'
+            error: error.message
         }, {
             status: 500
         });
@@ -133,9 +143,12 @@ async function GET(request) {
 }
 async function POST(request) {
     try {
+        console.log('=== POST /api/products ===');
         const body = await request.json();
+        console.log('Request body:', body);
         // Validate required fields
         if (!body.createdBy) {
+            console.log('Error: User ID required');
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 success: false,
                 error: 'User ID required'
@@ -144,22 +157,27 @@ async function POST(request) {
             });
         }
         if (!body.title || !body.price || !body.category) {
+            console.log('Error: Missing required fields');
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 success: false,
-                error: 'Missing required fields'
+                error: 'Missing required fields (title, price, category)'
             }, {
                 status: 400
             });
         }
         const client = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mongodb$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"];
-        const db = client.db('winter-dog-care-01'); // Change to your database name
+        console.log('MongoDB client connected');
+        const db = client.db('winter-dog-care-01'); // ← CHANGE TO YOUR DB NAME
+        console.log('Database:', db.databaseName);
         // Prepare product data
         const productData = {
             ...body,
             createdAt: new Date(),
             updatedAt: new Date()
         };
+        console.log('Inserting product:', productData);
         const result = await db.collection('products').insertOne(productData);
+        console.log('Insert result:', result);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true,
             message: 'Product created successfully',
@@ -168,10 +186,12 @@ async function POST(request) {
             status: 201
         });
     } catch (error) {
-        console.error('Error creating product:', error);
+        console.error('=== ERROR in POST /api/products ===');
+        console.error('Error:', error.message);
+        console.error('Stack:', error.stack);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: false,
-            error: 'Failed to create product'
+            error: error.message
         }, {
             status: 500
         });

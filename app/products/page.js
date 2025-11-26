@@ -99,12 +99,12 @@ export default function ProductsPage() {
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-3 border text-gray-900 border-gray-300 rounded-lg"
             />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-3 border text-gray-900 border-gray-300 rounded-lg"
             >
               <option value="all">All Categories</option>
               <option value="Clothing">Clothing</option>

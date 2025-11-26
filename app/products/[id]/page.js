@@ -12,23 +12,19 @@ export default function ProductDetailsPage({ params }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+   useEffect(() => {
+    if (!id) return;
+
     const fetchProduct = async () => {
       try {
         const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
         
         if (data.product) {
-          setProduct({
-            ...data.product,
-            id: data.product._id.toString(),
-          });
-        } else {
-          setProduct(null);
+          setProduct(data.product);
         }
       } catch (error) {
         console.error('Error fetching product:', error);
-        setProduct(null);
       } finally {
         setLoading(false);
       }
@@ -37,7 +33,7 @@ export default function ProductDetailsPage({ params }) {
     if (id) {
       fetchProduct();
     }
-  }, [id]); // ← Use unwrapped id
+  }, [id]); 
 
   if (loading) {
     return (

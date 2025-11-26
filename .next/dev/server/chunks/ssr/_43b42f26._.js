@@ -316,7 +316,7 @@ function ProductsPage() {
                                 placeholder: "Search products...",
                                 value: searchTerm,
                                 onChange: (e)=>setSearchTerm(e.target.value),
-                                className: "w-full px-4 py-3 border border-gray-300 rounded-lg"
+                                className: "w-full px-4 py-3 border text-gray-900 border-gray-300 rounded-lg"
                             }, void 0, false, {
                                 fileName: "[project]/app/products/page.js",
                                 lineNumber: 97,
@@ -325,7 +325,7 @@ function ProductsPage() {
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
                                 value: selectedCategory,
                                 onChange: (e)=>setSelectedCategory(e.target.value),
-                                className: "w-full px-4 py-3 border border-gray-300 rounded-lg",
+                                className: "w-full px-4 py-3 border text-gray-900 border-gray-300 rounded-lg",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                         value: "all",

@@ -11,21 +11,25 @@ function ManageProductsContent() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(null);
+  
+  // UI States
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  
+  // Delete Modal States
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      fetchProducts();
-    }
+    if (user) fetchProducts();
   }, [user]);
 
   const fetchProducts = async () => {
     if (!user) return;
-
     try {
       const response = await fetch(`/api/products?userId=${user.uid}`);
       const data = await response.json();
-
       if (data.products) {
         const productsData = data.products.map(product => ({
           ...product,
@@ -40,50 +44,97 @@ function ManageProductsContent() {
     }
   };
 
-  const handleDelete = async (productId) => {
-    if (!confirm('Are you sure you want to delete this product?')) {
-      return;
-    }
+  // 1. Open Confirmation Modal
+  const promptDelete = (product) => {
+    setProductToDelete(product);
+    setDeleteModalOpen(true);
+  };
 
-    setDeleting(productId);
+  // 2. Perform Delete
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+    setIsDeleting(true);
+
     try {
-      const response = await fetch(`/api/products/${productId}`, {
+      const response = await fetch(`/api/products/${productToDelete.id}`, {
         method: 'DELETE',
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to delete');
-      }
+      if (!response.ok) throw new Error('Failed to delete');
 
-      setProducts(products.filter(p => p.id !== productId));
-      alert('Product deleted successfully! ✅');
+      // Remove from UI
+      setProducts(products.filter(p => p.id !== productToDelete.id));
+      
+      // Close Modal
+      setDeleteModalOpen(false);
+      setProductToDelete(null);
+      
+      // Show Success Toast
+      setToastMessage('Product deleted successfully! 🗑️');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+
     } catch (error) {
       console.error('Error deleting product:', error);
-      alert('Failed to delete product: ' + error.message);
+      alert('Failed to delete product'); // Fallback for actual errors
     } finally {
-      setDeleting(null);
+      setIsDeleting(false);
     }
-  }; // ← PROPERLY CLOSED FUNCTION
+  };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-16">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
-          <p className="text-xl text-gray-600">Loading products...</p>
-        </div>
-      </div>
-    );
+    return <div className="pt-24 text-center">Loading...</div>;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        {/* --- SUCCESS TOAST --- */}
+        {showToast && (
+          <div className="fixed top-20 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-bounce flex items-center">
+            <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="font-semibold">{toastMessage}</span>
+          </div>
+        )}
+
+        {/* --- DELETE CONFIRMATION MODAL --- */}
+        {deleteModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full animate-fadeIn">
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Delete Product?</h3>
+                <p className="text-gray-600">
+                  Are you sure you want to delete <span className="font-bold">"{productToDelete?.title}"</span>? This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setDeleteModalOpen(false)}
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition disabled:opacity-50"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Manage Products</h1>
-            <p className="text-gray-600">View and manage all your winter dog care products</p>
+            <p className="text-gray-600">Manage your winter dog care products</p>
           </div>
           <Link 
             href="/add-product" 
@@ -93,167 +144,63 @@ function ManageProductsContent() {
           </Link>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Total Products</p>
-                <p className="text-3xl font-bold text-gray-900">{products.length}</p>
-              </div>
-              <div className="text-5xl">📦</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Your Products</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {products.filter(p => p.createdBy === user?.uid).length}
-                </p>
-              </div>
-              <div className="text-5xl">✨</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Categories</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {new Set(products.map(p => p.category)).size}
-                </p>
-              </div>
-              <div className="text-5xl">🏷️</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Products Table/Grid */}
+        {/* Products Table */}
         {products.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📦</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">No products yet</h3>
-            <p className="text-gray-600 mb-6">Start by adding your first winter dog care product</p>
-            <Link
-              href="/add-product"
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-            >
-              Add Your First Product
-            </Link>
+            <p className="text-xl text-gray-600">No products found.</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Product
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Category
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Price
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Created By
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Product</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Category</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Price</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {products.map(product => (
-                    <tr key={product.id} className="hover:bg-gray-50 transition">
+                    <tr key={product.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
-                          <div className="text-3xl mr-4">{product.emoji || '🐕'}</div>
-                          <div>
-                            <div className="font-semibold text-gray-900">{product.title}</div>
-                            <div className="text-sm text-gray-500 line-clamp-1">{product.shortDescription}</div>
-                          </div>
+                          <div className="text-3xl mr-4">{product.emoji}</div>
+                          <div className="font-semibold text-gray-900">{product.title}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
+                        <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-bold uppercase">
                           {product.category}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="font-bold text-gray-900">${product.price}</span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {product.createdByName || 'Unknown'}
-                      </td>
+                      <td className="px-6 py-4 font-bold text-gray-900">${product.price}</td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => router.push(`/products/${product.id}`)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
-                          >
-                            View
-                          </button>
-                          <button
-                            onClick={() => handleDelete(product.id)}
-                            disabled={deleting === product.id}
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
-                          >
-                            {deleting === product.id ? '...' : 'Delete'}
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => router.push(`/products/${product.id}`)}
+                          className="text-blue-600 hover:text-blue-800 font-semibold mr-4"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => promptDelete(product)}
+                          className="text-red-600 hover:text-red-800 font-semibold"
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
-            {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-gray-200">
-              {products.map(product => (
-                <div key={product.id} className="p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="text-5xl">{product.emoji || '🐕'}</div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-1">{product.title}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{product.shortDescription}</p>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-semibold">
-                          {product.category}
-                        </span>
-                        <span className="font-bold text-gray-900">${product.price}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => router.push(`/products/${product.id}`)}
-                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      disabled={deleting === product.id}
-                      className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm font-semibold disabled:bg-gray-400"
-                    >
-                      {deleting === product.id ? '...' : 'Delete'}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </div>
     </div>
   );
-} // ← REMOVED SEMICOLON (not needed for function declaration)
+}
 
 export default function ManageProductsPage() {
   return (
@@ -261,4 +208,4 @@ export default function ManageProductsPage() {
       <ManageProductsContent />
     </ProtectedRoute>
   );
-} // ← REMOVED SEMICOLON
+}

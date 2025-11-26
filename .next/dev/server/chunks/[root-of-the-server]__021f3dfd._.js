@@ -92,9 +92,10 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$mongodb__$5b$external$5d$_
 ;
 async function GET(request, { params }) {
     try {
-        const { id } = params;
+        const { id } = await params;
+        console.log("API Fetching ID:", id);
         // Validate ObjectId
-        if (!__TURBOPACK__imported__module__$5b$externals$5d2f$mongodb__$5b$external$5d$__$28$mongodb$2c$__cjs$29$__["ObjectId"].isValid(id)) {
+        if (!id || !__TURBOPACK__imported__module__$5b$externals$5d2f$mongodb__$5b$external$5d$__$28$mongodb$2c$__cjs$29$__["ObjectId"].isValid(id)) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 success: false,
                 error: 'Invalid product ID'
@@ -103,7 +104,7 @@ async function GET(request, { params }) {
             });
         }
         const client = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mongodb$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"];
-        const db = client.db('petshop'); // Replace with your DB name
+        const db = client.db('winter-dog-care-01'); // Replace with your DB name
         const product = await db.collection('products').findOne({
             _id: new __TURBOPACK__imported__module__$5b$externals$5d2f$mongodb__$5b$external$5d$__$28$mongodb$2c$__cjs$29$__["ObjectId"](id)
         });
@@ -133,7 +134,7 @@ async function GET(request, { params }) {
 } // ← GET FUNCTION CLOSED HERE
 async function DELETE(request, { params }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         // Validate ObjectId
         if (!__TURBOPACK__imported__module__$5b$externals$5d2f$mongodb__$5b$external$5d$__$28$mongodb$2c$__cjs$29$__["ObjectId"].isValid(id)) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
@@ -144,7 +145,7 @@ async function DELETE(request, { params }) {
             });
         }
         const client = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mongodb$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"];
-        const db = client.db('petshop'); // Replace with your DB name
+        const db = client.db('winter-dog-care-01'); // Replace with your DB name
         const result = await db.collection('products').deleteOne({
             _id: new __TURBOPACK__imported__module__$5b$externals$5d2f$mongodb__$5b$external$5d$__$28$mongodb$2c$__cjs$29$__["ObjectId"](id)
         });
@@ -174,7 +175,7 @@ async function DELETE(request, { params }) {
 } // ← DELETE FUNCTION CLOSED HERE
 async function PUT(request, { params }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
         // Validate ObjectId
         if (!__TURBOPACK__imported__module__$5b$externals$5d2f$mongodb__$5b$external$5d$__$28$mongodb$2c$__cjs$29$__["ObjectId"].isValid(id)) {
@@ -186,7 +187,7 @@ async function PUT(request, { params }) {
             });
         }
         const client = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mongodb$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"];
-        const db = client.db('petshop'); // Replace with your DB name
+        const db = client.db('winter-dog-care-01'); // Replace with your DB name
         // Remove _id from body if present
         const { _id, ...updateData } = body;
         const result = await db.collection('products').updateOne({
@@ -220,7 +221,7 @@ async function PUT(request, { params }) {
             status: 500
         });
     }
-} // ← PUT FUNCTION CLOSED HERE
+}
 }),
 ];
 

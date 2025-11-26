@@ -5,10 +5,11 @@ import { ObjectId } from 'mongodb';
 // GET - Fetch single product
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const { id } =await params;
+    console.log("API Fetching ID:", id);
 
     // Validate ObjectId
-    if (!ObjectId.isValid(id)) {
+        if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ 
         success: false,
         error: 'Invalid product ID' 
@@ -16,7 +17,7 @@ export async function GET(request, { params }) {
     }
 
     const client = await clientPromise;
-    const db = client.db('petshop'); // Replace with your DB name
+    const db = client.db('winter-dog-care-01'); // Replace with your DB name
     
     const product = await db
       .collection('products')
@@ -46,7 +47,7 @@ export async function GET(request, { params }) {
 // DELETE - Delete a product
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ObjectId
     if (!ObjectId.isValid(id)) {
@@ -57,7 +58,7 @@ export async function DELETE(request, { params }) {
     }
 
     const client = await clientPromise;
-    const db = client.db('petshop'); // Replace with your DB name
+    const db = client.db('winter-dog-care-01'); // Replace with your DB name
     
     const result = await db
       .collection('products')
@@ -87,7 +88,7 @@ export async function DELETE(request, { params }) {
 // PUT - Update a product
 export async function PUT(request, { params }) {
   try {
-    const { id } = params;
+    const { id } =await params;
     const body = await request.json();
 
     // Validate ObjectId
@@ -99,7 +100,7 @@ export async function PUT(request, { params }) {
     }
 
     const client = await clientPromise;
-    const db = client.db('petshop'); // Replace with your DB name
+    const db = client.db('winter-dog-care-01'); // Replace with your DB name
     
     // Remove _id from body if present
     const { _id, ...updateData } = body;
@@ -135,4 +136,4 @@ export async function PUT(request, { params }) {
       error: 'Failed to update product' 
     }, { status: 500 });
   }
-} // ← PUT FUNCTION CLOSED HERE
+} 

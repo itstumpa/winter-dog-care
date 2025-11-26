@@ -1,6 +1,43 @@
+'use client';
+
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+const gradientColors = [
+  'from-blue-400 to-blue-600',
+  'from-purple-400 to-purple-600',
+  'from-green-400 to-green-600',
+  'from-pink-400 to-pink-600',
+  'from-yellow-400 to-yellow-600',
+  'from-red-400 to-red-600',
+  'from-indigo-400 to-indigo-600',
+  'from-teal-400 to-teal-600',
+  'from-orange-400 to-orange-600',
+  'from-cyan-400 to-cyan-600'
+];
 
 export default function Home() {
+   const [data, setData] = useState({ section: {}, products: [] });
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <div className="py-20 text-center">Loading...</div>;
+  }
+
   return (
     <div className="pt-16">
       {/* 1. HERO SECTION */}
@@ -15,14 +52,14 @@ export default function Home() {
                 Premium winter care products designed to protect your furry friends from harsh cold weather.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link 
-                  href="/products" 
+                <Link
+                  href="/products"
                   className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition text-center"
                 >
                   Shop Now 🛒
                 </Link>
-                <Link 
-                  href="#about" 
+                <Link
+                  href="#about"
                   className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition text-center"
                 >
                   Learn More
@@ -46,7 +83,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose Us?</h2>
             <p className="text-xl text-gray-600">Everything your dog needs for a cozy winter</p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="bg-blue-50 rounded-xl p-8 hover:shadow-xl transition transform hover:-translate-y-2">
@@ -77,79 +114,65 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* 3. POPULAR PRODUCTS SECTION */}
+{/* popular products  */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Popular Products</h2>
-            <p className="text-xl text-gray-600">Best sellers this winter season</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Product Card 1 */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2">
-              <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-8xl">
-                🧥
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Winter Dog Coat</h3>
-                <p className="text-gray-600 mb-4">Waterproof and insulated jacket for maximum warmth.</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-blue-600">$49.99</span>
-                  <Link href="/products" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                    View
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Product Card 2 */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2">
-              <div className="h-48 bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-8xl">
-                🐾
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Paw Protection Boots</h3>
-                <p className="text-gray-600 mb-4">Protect paws from ice, snow, and salt on roads.</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-blue-600">$29.99</span>
-                  <Link href="/products" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                    View
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Product Card 3 */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2">
-              <div className="h-48 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-8xl">
-                🍖
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Winter Nutrition Pack</h3>
-                <p className="text-gray-600 mb-4">Special diet supplements for cold weather energy.</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-blue-600">$39.99</span>
-                  <Link href="/products" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                    View
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <Link 
-              href="/products" 
-              className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
-            >
-              View All Products →
-            </Link>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Popular Products
+          </h2>
+          <p className="text-xl text-gray-600">
+            Best sellers this winter season
+          </p>
         </div>
-      </section>
 
+        <div className="grid md:grid-cols-3 gap-8">
+          {data.products.map((product, index) => (
+            <div 
+              key={index}
+              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2"
+            >
+              <div className={`h-48 bg-gradient-to-br ${gradientColors[index % gradientColors.length]} flex items-center justify-center text-8xl`}>
+                {product.emoji}
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {product.name}
+                  </h3>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                    {product.category}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  {product.description}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-blue-600">
+                    ${product.price}
+                  </span>
+                  <Link 
+                    href="/products" 
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    View
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <Link
+            href="/products"
+            className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+          >
+            View All Products →
+          </Link>
+        </div>
+      </div>
+    </section>
       {/* 4. TESTIMONIALS SECTION */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -291,7 +314,7 @@ export default function Home() {
           <p className="text-xl text-gray-600 mb-8">
             Join thousands of pet parents who trust us for their winter dog care needs.
           </p>
-          
+
           <div className="bg-blue-50 rounded-2xl p-8 mb-8">
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div>
@@ -312,8 +335,8 @@ export default function Home() {
             </div>
           </div>
 
-          <Link 
-            href="/products" 
+          <Link
+            href="/products"
             className="inline-block bg-blue-600 text-white px-12 py-5 rounded-lg text-xl font-semibold hover:bg-blue-700 transition transform hover:scale-105"
           >
             Start Shopping Now 🛒

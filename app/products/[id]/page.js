@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -12,67 +10,29 @@ export default function ProductDetailsPage({ params }) {
   const router = useRouter();
 
   useEffect(() => {
-    fetchProduct();
-  }, [params.id]);
-
-  const fetchProduct = async () => {
-    try {
-      const docRef = doc(db, 'products', params.id);
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        setProduct({ id: docSnap.id, ...docSnap.data() });
-      } else {
-        // Sample product for demo
-        setSampleProduct();
-      }
-    } catch (error) {
-      console.error('Error fetching product:', error);
-      setSampleProduct();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const setSampleProduct = () => {
-    const sampleProducts = {
-      '1': {
-        id: '1',
-        title: 'Premium Winter Dog Coat',
-        shortDescription: 'Waterproof and insulated jacket for maximum warmth',
-        fullDescription: 'Our Premium Winter Dog Coat is designed with your pet\'s comfort in mind. Made from high-quality, waterproof materials with an insulated inner layer, this coat will keep your dog warm and dry during the coldest winter days. Features adjustable straps for a perfect fit, reflective strips for nighttime visibility, and a stylish design that your dog will love wearing. Suitable for all breeds and sizes. Machine washable for easy care.',
-        price: '49.99',
-        category: 'Clothing',
-        gradient: 'from-blue-400 to-blue-600',
-        emoji: '🧥',
-        features: ['Waterproof outer layer', 'Insulated interior', 'Adjustable fit', 'Reflective strips', 'Machine washable']
-      },
-      '2': {
-        id: '2',
-        title: 'Paw Protection Boots',
-        shortDescription: 'Protect paws from ice, snow, and salt on roads',
-        fullDescription: 'Keep your dog\'s paws safe and comfortable with our Paw Protection Boots. These durable boots protect against ice, snow, salt, and rough terrain. The non-slip sole provides excellent traction, while the adjustable velcro straps ensure they stay securely in place. Made from breathable, weather-resistant materials. Perfect for winter walks and outdoor adventures.',
-        price: '29.99',
-        category: 'Accessories',
-        gradient: 'from-purple-400 to-purple-600',
-        emoji: '🐾',
-        features: ['Non-slip sole', 'Adjustable velcro straps', 'Breathable material', 'Set of 4 boots', 'Multiple sizes available']
-      },
-      '3': {
-        id: '3',
-        title: 'Winter Nutrition Pack',
-        shortDescription: 'Special diet supplements for cold weather energy',
-        fullDescription: 'Our Winter Nutrition Pack is specially formulated to help your dog maintain energy and health during the cold winter months. Contains essential vitamins, minerals, and omega fatty acids that support immune function, joint health, and coat quality. Veterinarian recommended and made with all-natural ingredients. Easy to add to your dog\'s regular meals.',
-        price: '39.99',
-        category: 'Nutrition',
-        gradient: 'from-green-400 to-green-600',
-        emoji: '🍖',
-        features: ['Vet approved formula', 'All-natural ingredients', 'Supports immune system', 'Promotes healthy coat', '30-day supply']
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`/api/products/${params.id}`);
+        const data = await response.json();
+        
+        if (data.product) {
+          setProduct({
+            ...data.product,
+            id: data.product._id.toString(),
+          });
+        } else {
+          setProduct(null);
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    setProduct(sampleProducts[params.id] || sampleProducts['1']);
-  };
+    fetchProduct(); // ← CALL THE FUNCTION
+  }, [params.id]); // ← ADD DEPENDENCY
 
   if (loading) {
     return (
@@ -91,7 +51,7 @@ export default function ProductDetailsPage({ params }) {
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h2>
-          <Link href="/products" className="text-blue-600 hover:text-blue-700">
+          <Link href="/products" className="text-blue-600 hover:text-blue-700 font-semibold">
             ← Back to Products
           </Link>
         </div>
@@ -105,7 +65,7 @@ export default function ProductDetailsPage({ params }) {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="flex items-center text-blue-600 hover:text-blue-700 mb-8 font-semibold"
+          className="flex items-center text-blue-600 hover:text-blue-700 mb-8 font-semibold transition"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -116,22 +76,25 @@ export default function ProductDetailsPage({ params }) {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Product Image */}
-            <div className={`bg-gradient-to-br ${product.gradient || 'from-blue-400 to-blue-600'} flex items-center justify-center p-12`}>
+            <div className={`bg-gradient-to-br ${product.gradient || 'from-blue-400 to-blue-600'} flex items-center justify-center p-12 min-h-[500px]`}>
               <div className="text-[200px] leading-none">{product.emoji || '🐕'}</div>
             </div>
 
             {/* Product Info */}
             <div className="p-8 md:p-12">
+              {/* Category Badge */}
               <div className="mb-4">
-                <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
+                <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold uppercase tracking-wide">
                   {product.category || 'General'}
                 </span>
               </div>
 
+              {/* Product Title */}
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 {product.title}
               </h1>
 
+              {/* Price Section */}
               <div className="flex items-center mb-6">
                 <span className="text-5xl font-bold text-blue-600">
                   ${product.price}
@@ -141,10 +104,12 @@ export default function ProductDetailsPage({ params }) {
                 </span>
               </div>
 
-              <p className="text-gray-600 text-lg mb-6">
+              {/* Short Description */}
+              <p className="text-gray-600 text-lg mb-6 leading-relaxed">
                 {product.shortDescription}
               </p>
 
+              {/* Full Description */}
               <div className="border-t border-gray-200 pt-6 mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
                 <p className="text-gray-700 leading-relaxed">
@@ -152,7 +117,8 @@ export default function ProductDetailsPage({ params }) {
                 </p>
               </div>
 
-              {product.features && (
+              {/* Features (if available) */}
+              {product.features && product.features.length > 0 && (
                 <div className="border-t border-gray-200 pt-6 mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
                   <ul className="space-y-3">
@@ -168,17 +134,39 @@ export default function ProductDetailsPage({ params }) {
                 </div>
               )}
 
+              {/* Creator Info */}
+              {product.createdByName && (
+                <div className="border-t border-gray-200 pt-6 mb-6">
+                  <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                    Listed By
+                  </h3>
+                  <div className="flex items-center">
+                    <div className="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg mr-3">
+                      {product.createdByName.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{product.createdByName}</p>
+                      {product.createdByEmail && (
+                        <p className="text-sm text-gray-600">{product.createdByEmail}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
               <div className="flex gap-4 mt-8">
-                <button className="flex-1 bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition">
+                <button className="flex-1 bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-md hover:shadow-lg">
                   Add to Cart 🛒
                 </button>
-                <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
+                <button className="border-2 border-blue-600 text-blue-600 px-6 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
                   ❤️
                 </button>
               </div>
 
+              {/* Shipping Info */}
               <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-green-700 text-sm">
+                <p className="text-green-700 text-sm font-medium">
                   ✓ Free shipping on orders over $50 • 30-day money-back guarantee
                 </p>
               </div>

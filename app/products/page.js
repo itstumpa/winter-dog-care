@@ -1,34 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import ProductCard from '@/components/ProductCard';
+import Link from 'next/link';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+  fetchProducts();
+}, [user]);
 
   const fetchProducts = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'products'));
-      const productsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
+  if (!user) {
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/products?userId=${user.uid}`);
+    const data = await response.json();
+    
+    if (data.products) {
+      // Convert MongoDB _id to id for consistency
+      const productsData = data.products.map(product => ({
+        ...product,
+        id: product._id.toString(),
       }));
       setProducts(productsData);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Filter products
   const filteredProducts = products.filter(product => {
@@ -38,76 +48,33 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory;
   });
 
-  // Sample products if Firebase is empty
-  const sampleProducts = [
-    {
-      id: '1',
-      title: 'Premium Winter Dog Coat',
-      shortDescription: 'Waterproof and insulated jacket for maximum warmth',
-      price: '49.99',
-      category: 'Clothing',
-      gradient: 'from-blue-400 to-blue-600',
-      emoji: '🧥'
-    },
-    {
-      id: '2',
-      title: 'Paw Protection Boots',
-      shortDescription: 'Protect paws from ice, snow, and salt on roads',
-      price: '29.99',
-      category: 'Accessories',
-      gradient: 'from-purple-400 to-purple-600',
-      emoji: '🐾'
-    },
-    {
-      id: '3',
-      title: 'Winter Nutrition Pack',
-      shortDescription: 'Special diet supplements for cold weather energy',
-      price: '39.99',
-      category: 'Nutrition',
-      gradient: 'from-green-400 to-green-600',
-      emoji: '🍖'
-    },
-    {
-      id: '4',
-      title: 'Cozy Dog Bed',
-      shortDescription: 'Extra warm orthopedic bed for winter comfort',
-      price: '79.99',
-      category: 'Furniture',
-      gradient: 'from-pink-400 to-pink-600',
-      emoji: '🛏️'
-    },
-    {
-      id: '5',
-      title: 'Reflective Safety Vest',
-      shortDescription: 'High visibility vest for safe winter walks',
-      price: '24.99',
-      category: 'Safety',
-      gradient: 'from-yellow-400 to-orange-600',
-      emoji: '🦺'
-    },
-    {
-      id: '6',
-      title: 'Heated Water Bowl',
-      shortDescription: 'Prevents water from freezing in cold weather',
-      price: '44.99',
-      category: 'Accessories',
-      gradient: 'from-red-400 to-red-600',
-      emoji: '💧'
-    }
-  ];
+  const displayProducts = filteredProducts;
 
-  const displayProducts = filteredProducts.length > 0 ? filteredProducts : sampleProducts;
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-16">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
-          <p className="text-xl text-gray-600">Loading products...</p>
-        </div>
+  if (authLoading || loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center pt-16">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
+        <p className="text-xl text-gray-600">Loading...</p>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+if (!user) {
+  return (
+    <div className="min-h-screen flex items-center justify-center pt-16">
+      <div className="text-center">
+        <div className="text-6xl mb-4">🔒</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Login Required</h2>
+        <p className="text-gray-600 mb-6">Please login to view your products</p>
+        <Link href="/login" className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+          Go to Login
+        </Link>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">

@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐕❄️ Winter Dog Care - Next.js Application
 
-## Getting Started
+A modern, responsive web application for winter dog care products built with Next.js and Firebase.
 
-First, run the development server:
+## 🌟 Features
 
+- **7-Section Landing Page** with hero, features, products, testimonials, tips, about, and contact sections
+- **Authentication** with Google Sign-In using Firebase
+- **Product Management** with full CRUD operations
+- **Protected Routes** for authenticated users only
+- **Responsive Design** optimized for mobile, tablet, and desktop
+- **Real-time Database** with Firebase Firestore
+
+## 🛠️ Technologies Used
+
+- **Next.js 14** (App Router)
+- **React** for UI components
+- **Firebase** for authentication and database
+- **Tailwind CSS** for styling
+- **Vercel** for deployment
+
+## 📋 Routes
+
+| Route | Description | Protected |
+|-------|-------------|-----------|
+| `/` | Landing page with 7 sections | No |
+| `/login` | Google authentication | No |
+| `/products` | List all products with search/filter | No |
+| `/products/[id]` | Product details page | No |
+| `/add-product` | Add new product form | Yes ✅ |
+| `/manage-products` | Manage all products | Yes ✅ |
+
+## 🚀 Setup & Installation
+
+### Prerequisites
+- Node.js 18+ installed
+- Firebase account
+- Git installed
+
+### Installation Steps
+
+1. **Clone the repository**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone YOUR_REPO_URL
+cd my-skills-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Install dependencies**
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Setup Firebase**
+   - Create a Firebase project at [firebase.google.com](https://firebase.google.com)
+   - Enable Google Authentication
+   - Create Firestore database
+   - Copy your Firebase config
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **Create `.env.local` file**
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
 
-## Learn More
+5. **Run development server**
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. **Open browser**
+Navigate to [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Deploy to Vercel
 
-## Deploy on Vercel
+1. Push code to GitHub
+2. Go to [vercel.com](https://vercel.com)
+3. Import your repository
+4. Add environment variables
+5. Deploy!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 UI Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Sticky Navbar** with user dropdown
+- **Responsive Design** for all screen sizes
+- **Hover Effects** on cards and buttons
+- **Loading States** for better UX
+- **Toast Notifications** for user feedback
+- **Gradient Backgrounds** for visual appeal
+- **Emoji Icons** for product representation
+
+## 👤 Created By
+
+[Tumpa Das]

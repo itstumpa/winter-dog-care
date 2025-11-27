@@ -127,7 +127,7 @@ export default function Home() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {data.products.slice(0, 3).map((product, index) => (
+          {(data.products || []).slice(0, 3).map((product, index) => (
              <div 
                 key={product._id || index}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2"

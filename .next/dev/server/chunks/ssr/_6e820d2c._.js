@@ -274,7 +274,7 @@ function AddProductContent() {
                                         value: formData.title,
                                         onChange: handleChange,
                                         required: true,
-                                        className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                                        className: "w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
                                         placeholder: "e.g., Premium Winter Dog Coat"
                                     }, void 0, false, {
                                         fileName: "[project]/app/add-product/page.js",
@@ -304,7 +304,7 @@ function AddProductContent() {
                                         onChange: handleChange,
                                         required: true,
                                         maxLength: 100,
-                                        className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                                        className: "w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
                                         placeholder: "Brief product description..."
                                     }, void 0, false, {
                                         fileName: "[project]/app/add-product/page.js",
@@ -344,7 +344,7 @@ function AddProductContent() {
                                         onChange: handleChange,
                                         required: true,
                                         rows: 6,
-                                        className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                                        className: "w-full px-4 text-gray-900 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
                                         placeholder: "Detailed product description, features, benefits..."
                                     }, void 0, false, {
                                         fileName: "[project]/app/add-product/page.js",
@@ -378,7 +378,7 @@ function AddProductContent() {
                                                 required: true,
                                                 step: "0.01",
                                                 min: "0",
-                                                className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                                                className: "w-full px-4 text-gray-900 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
                                                 placeholder: "49.99"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/add-product/page.js",
@@ -406,7 +406,7 @@ function AddProductContent() {
                                                 value: formData.category,
                                                 onChange: handleChange,
                                                 required: true,
-                                                className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                                                className: "w-full px-4 py-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                         value: "Clothing",
@@ -500,7 +500,7 @@ function AddProductContent() {
                                                             ...prev,
                                                             emoji
                                                         })),
-                                                className: `text-4xl p-3 rounded-lg border-2 transition transform hover:scale-110 ${formData.emoji === emoji ? 'border-blue-600 bg-blue-50 scale-110' : 'border-gray-300 hover:border-blue-400'}`,
+                                                className: `text-4xl text-gray-900 p-3 rounded-lg border-2 transition transform hover:scale-110 ${formData.emoji === emoji ? 'border-blue-600 bg-blue-50 scale-110' : 'border-gray-300 hover:border-blue-400'}`,
                                                 children: emoji
                                             }, emoji, false, {
                                                 fileName: "[project]/app/add-product/page.js",
@@ -533,7 +533,7 @@ function AddProductContent() {
                                         name: "imageUrl",
                                         value: formData.imageUrl,
                                         onChange: handleChange,
-                                        className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                                        className: "w-full px-4 py-3 border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
                                         placeholder: "https://example.com/image.jpg"
                                     }, void 0, false, {
                                         fileName: "[project]/app/add-product/page.js",

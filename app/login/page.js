@@ -2,11 +2,24 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function LoginPage() {
-  const { user, signInWithGoogle, loading } = useAuth();
+const { user, signInWithGoogle, signInWithEmail, signUpWithEmail, loading } = useAuth();
   const router = useRouter();
+
+
+
+const [isSignUp, setIsSignUp] = useState(false);
+const [formData, setFormData] = useState({
+  email: '',
+  password: '',
+  displayName: ''
+});
+const [formLoading, setFormLoading] = useState(false);
+const [error, setError] = useState('');
+
+
 
   useEffect(() => {
     if (user) {
@@ -21,6 +34,65 @@ export default function LoginPage() {
       </div>
     );
   }
+
+
+  const handleInputChange = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value
+  });
+  setError(''); // Clear error when typing
+};
+
+const handleEmailAuth = async (e) => {
+  e.preventDefault();
+  setFormLoading(true);
+  setError('');
+
+  // Validation
+  if (!formData.email || !formData.password) {
+    setError('Please fill in all fields');
+    setFormLoading(false);
+    return;
+  }
+
+  if (formData.password.length < 6) {
+    setError('Password must be at least 6 characters');
+    setFormLoading(false);
+    return;
+  }
+
+  if (isSignUp && !formData.displayName) {
+    setError('Please enter your name');
+    setFormLoading(false);
+    return;
+  }
+
+  try {
+    let result;
+    if (isSignUp) {
+      result = await signUpWithEmail(formData.email, formData.password, formData.displayName);
+    } else {
+      result = await signInWithEmail(formData.email, formData.password);
+    }
+
+    if (result.success) {
+      router.push('/');
+    } else {
+      setError(result.error || 'Authentication failed');
+    }
+  } catch (err) {
+    setError('Something went wrong. Please try again.');
+  } finally {
+    setFormLoading(false);
+  }
+};
+
+const toggleMode = () => {
+  setIsSignUp(!isSignUp);
+  setError('');
+  setFormData({ email: '', password: '', displayName: '' });
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4 pt-16">
@@ -57,43 +129,103 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Email/Password Form (UI Only) */}
-          <form className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="you@example.com"
-                disabled
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="••••••••"
-                disabled
-              />
-            </div>
-            <button
-              type="button"
-              disabled
-              className="w-full bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed"
-            >
-              Email Login (Coming Soon)
-            </button>
-          </form>
+         {/* Email/Password Form (NOW ACTIVE) */}
+<form onSubmit={handleEmailAuth} className="space-y-4">
+  {/* Show error message */}
+  {error && (
+    <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+      {error}
+    </div>
+  )}
+
+  {/* Name field (only for sign up) */}
+  {isSignUp && (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Full Name
+      </label>
+      <input
+        type="text"
+        name="displayName"
+        value={formData.displayName}
+        onChange={handleInputChange}
+        className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="John Doe"
+        required
+      />
+    </div>
+  )}
+
+  {/* Email field */}
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2">
+      Email Address
+    </label>
+    <input
+      type="email"
+      name="email"
+      value={formData.email}
+      onChange={handleInputChange}
+      className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      placeholder="you@example.com"
+      required
+    />
+  </div>
+
+  {/* Password field */}
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2">
+      Password
+    </label>
+    <input
+      type="password"
+      name="password"
+      value={formData.password}
+      onChange={handleInputChange}
+      className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      placeholder="••••••••"
+      minLength={6}
+      required
+    />
+    {isSignUp && (
+      <p className="text-xs text-gray-500 mt-1">At least 6 characters</p>
+    )}
+  </div>
+
+  {/* Submit button */}
+  <button
+    type="submit"
+    disabled={formLoading}
+    className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300 disabled:cursor-not-allowed"
+  >
+    {formLoading ? (
+      <span className="flex items-center justify-center">
+        <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        </svg>
+        {isSignUp ? 'Creating Account...' : 'Signing In...'}
+      </span>
+    ) : (
+      isSignUp ? 'Create Account' : 'Sign In with Email'
+    )}
+  </button>
+</form>
 
           {/* Footer */}
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Don't have an account? Sign up with Google above!</p>
-          </div>
+        <div className="mt-6 text-center text-sm text-gray-600">
+  <p>
+    {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+    <button
+      type="button"
+      onClick={toggleMode}
+      className="text-blue-600 hover:text-blue-700 font-semibold"
+    >
+      {isSignUp ? 'Sign In' : 'Sign Up'}
+    </button>
+  </p>
+</div>
+
         </div>
 
         {/* Back to Home */}

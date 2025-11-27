@@ -1,5 +1,6 @@
 # 🐕❄️ Winter Dog Care - Next.js Application
 
+# Live site: Go to [Winter Dog Care](https://winter-dog-care-01.vercel.app)
 A modern, responsive web application for winter dog care products built with Next.js and Firebase.
 
 ## 🌟 Features
@@ -79,7 +80,7 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 ### Deploy to Vercel
 
 1. Push code to GitHub
-2. Go to [vercel.com](https://vercel.com)
+2. Go to [vercel.com](https://winter-dog-care-01.vercel.app)
 3. Import your repository
 4. Add environment variables
 5. Deploy!
